@@ -1,16 +1,28 @@
 from pybtracker import TrackerServer
 import asyncio
+import logging
+
+logger = logging.getLogger('udp_tracker_server')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+
 
 loop = asyncio.get_event_loop()
-print(":: Setting Loop...")
+logger.info(":: Setting Loop...")
 tracker = TrackerServer(local_addr=('0.0.0.0', 6565), loop=loop)
-print(":: Setting up tracker at 0.0.0.0:6565 ...")
+logger.info(":: Setting up tracker at 0.0.0.0:6565 ...")
 asyncio.ensure_future(tracker.start())
 try:
-	print(":: Server started ... 'udp://54.202.194.106:6565'")
+	logger.info(":: Server started ... 'udp://54.202.194.106:6565'")
 	loop.run_forever()
 except KeyboardInterrupt:
-	print(":: Server stopped! ...")
+	logger.exception(":: Server stopped! ...")
 	loop.run_until_complete(tracker.stop())
 except Exception as e:
-	raise e
+	logger.exception(e)
+	# raise e
